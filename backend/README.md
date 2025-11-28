@@ -7,7 +7,7 @@
 ### Pipeline de RAG (Retrieval-Augmented Generation)
 
 - [x] Implementar lógica para quebrar o texto do documento em chunks.
-- [ ] Simular ou implementar geração de embeddings (OpenAI, Cohere ou biblioteca local).
+- [x] Simular ou implementar geração de embeddings (OpenAI, Cohere ou biblioteca local).
 - [ ] Armazenar os vetores em uma estrutura de busca (ex: HNSWLib, Pinecone, ChromaDB).
 
 ### Agente de Consulta (Chat Endpoint)
