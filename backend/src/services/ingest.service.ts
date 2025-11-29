@@ -1,24 +1,29 @@
+import crypto from "crypto";
+
 import RagService from "./rag.service";
 import EmbeddingService from "./embedding.service";
 import ChunkService from "./chunk.service";
+import VectorService from "./vector.service";
 
 export default class IngestService {
-  static async process(file: Express.Multer.File) {
-
+  static async processFile(file: Express.Multer.File) {
     const text = await RagService.extractText(file);
-    const chunks = ChunkService.chunk(text);
-
-    const embeddings = [];
-    for (const chunk of chunks) {
-      const embedding = await EmbeddingService.embedding(chunk);
-      embeddings.push(embedding);
-    }
-    
+    const chunks = ChunkService.textToChunks(text);
+    const uniqueChunks = Array.from(new Set(chunks));
+    const embeddings = await Promise.all(
+      uniqueChunks.map((chunk) => EmbeddingService.generateEmbedding(chunk))
+    );
+    const ids = uniqueChunks.map(chunk =>
+      crypto.createHash("md5").update(chunk).digest("hex")
+    );
+    await VectorService.storeEmbeddings(ids, embeddings as number[][], uniqueChunks, file.originalname);
+    const vector = await VectorService.getEmbeddings()
     return {
       message: "File received",
-      filename: file.originalname,
-      embeddings,
-      totalChunks: chunks.length,
+      chunks: chunks.length,
+      ids: vector.ids,
+      metadata: vector.metadatas,
+      embeddings: vector.embeddings,
     };
   }
 }

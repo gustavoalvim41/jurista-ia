@@ -13,7 +13,7 @@ export default class IngestController {
         return res.status(400).json({ error: 'Only .txt or .pdf files are allowed' });
       }
 
-      const result = await IngestService.process(req.file);
+      const result = await IngestService.processFile(req.file);
       
       return res.status(200).json(result);
     } catch (err: any) {

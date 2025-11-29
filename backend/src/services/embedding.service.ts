@@ -8,7 +8,8 @@ const client = new CohereClientV2({
 });
 
 export default class EmbeddingService {
-  static async embedding(text: string): Promise<number[] | null> {
+  static async generateEmbedding(text: string): Promise<number[] | null> {
+    if (!text || text.trim() === "") return null;
     try {
       const resp = await client.embed({
         model: "embed-v4.0",
@@ -16,9 +17,17 @@ export default class EmbeddingService {
         inputType: "search_document",
         embeddingTypes: ["float"]
       });
-      return resp.embeddings.float[0];
+      if (
+        resp.embeddings &&
+        resp.embeddings.float &&
+        Array.isArray(resp.embeddings.float[0])
+      ) {
+        return resp.embeddings.float[0] as number[];
+      }
+      console.error("Unexpected response from Cohere:", resp);
+      return null;
     } catch (err) {
-      console.error("Error when generating embedding: ", err);
+      console.error("Error when generating embedding:", err);
       return null;
     }
   }
