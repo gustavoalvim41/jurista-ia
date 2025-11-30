@@ -15,6 +15,6 @@ export default class RagService {
         await parser.destroy();
       }
     }
-    throw new Error("File type not supported");
+    throw new Error("tipo do arquivo não suportado");
   }
 }

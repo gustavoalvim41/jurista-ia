@@ -19,7 +19,7 @@ export default class IngestService {
     await VectorService.storeEmbeddings(ids, embeddings as number[][], uniqueChunks, file.originalname);
     const vector = await VectorService.getEmbeddings()
     return {
-      message: "File received",
+      message: "arquivo enviado",
       chunks: chunks.length,
       ids: vector.ids,
       metadata: vector.metadatas,

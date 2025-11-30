@@ -12,7 +12,7 @@
 
 ### Agente de Consulta (Chat Endpoint)
 
-- [ ] Criar endpoint que receba a pergunta do usuário.
+- [x] Criar endpoint que receba a pergunta do usuário.
 - [ ] Realizar vector search para buscar trechos mais relevantes do contrato.
 - [ ] Montar o prompt com contexto + pergunta.
 - [ ] Enviar para a LLM e retornar a resposta gerada.

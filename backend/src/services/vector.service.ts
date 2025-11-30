@@ -16,9 +16,9 @@ export default class VectorService {
       const metadatas = ids.map((_, i) => ({ filename, chunk: i }));
 
       await collection.upsert({ ids, embeddings, documents, metadatas });
-      console.log("Embeddings stored successfully.");
+      console.log("embeddings armazenadas com sucesso.");
     } catch (err) {
-      console.error("Error storing embeddings:", err);
+      console.error("erro ao armazenar embeddings:", err);
     }
   }
 
@@ -32,7 +32,7 @@ export default class VectorService {
         include: ["embeddings", "documents", "metadatas", "uris"],
       });
     } catch (err) {
-      console.error("Error fetching embeddings:", err);
+      console.error("erro ao buscar embeddings:", err);
       return null;
     }
   }

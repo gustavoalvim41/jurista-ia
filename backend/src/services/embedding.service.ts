@@ -24,10 +24,10 @@ export default class EmbeddingService {
       ) {
         return resp.embeddings.float[0] as number[];
       }
-      console.error("Unexpected response from Cohere:", resp);
+      console.error("resposta inesperada de Cohere:", resp);
       return null;
     } catch (err) {
-      console.error("Error when generating embedding:", err);
+      console.error("erro ao gerar embedding:", err);
       return null;
     }
   }
