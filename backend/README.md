@@ -14,8 +14,8 @@
 
 - [x] Criar endpoint que receba a pergunta do usuário.
 - [x] Realizar vector search para buscar trechos mais relevantes do contrato.
-- [ ] Montar o prompt com contexto + pergunta.
-- [ ] Enviar para a LLM e retornar a resposta gerada.
+- [x] Montar o prompt com contexto + pergunta.
+- [x] Enviar para a LLM e retornar a resposta gerada.
 
 ### Rodar DOcker
 
