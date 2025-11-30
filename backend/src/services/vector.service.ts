@@ -1,6 +1,5 @@
 import { chroma } from "../../src/server";
-
-const COLLECTION_NAME = "vectors";
+import { COLLECTION_NAME } from "../constants"
 
 export default class VectorService {
   static async storeEmbeddings(
@@ -14,14 +13,12 @@ export default class VectorService {
         name: COLLECTION_NAME,
       });
       const metadatas = ids.map((_, i) => ({ filename, chunk: i }));
-
       await collection.upsert({ ids, embeddings, documents, metadatas });
       console.log("embeddings armazenadas com sucesso.");
     } catch (err) {
       console.error("erro ao armazenar embeddings:", err);
     }
   }
-
   static async getEmbeddings() {
     try {
       const collection = await chroma.getOrCreateCollection({

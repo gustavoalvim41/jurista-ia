@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const client = new CohereClientV2({
-  token: process.env.API_KEY!
+  token: process.env.API_KEY!,
 });
 
 export default class EmbeddingService {
@@ -12,19 +12,14 @@ export default class EmbeddingService {
     if (!text || text.trim() === "") return null;
     try {
       const resp = await client.embed({
-        model: "embed-v4.0",
+        model: "embed-multilingual-v3.0",
         texts: [text],
         inputType: "search_document",
-        embeddingTypes: ["float"]
       });
-      if (
-        resp.embeddings &&
-        resp.embeddings.float &&
-        Array.isArray(resp.embeddings.float[0])
-      ) {
-        return resp.embeddings.float[0] as number[];
+      if (resp.embeddings?.float?.[0]) {
+        return resp.embeddings.float[0];
       }
-      console.error("resposta inesperada de Cohere:", resp);
+      console.error("Resposta inesperada de Cohere:", resp);
       return null;
     } catch (err) {
       console.error("erro ao gerar embedding:", err);
