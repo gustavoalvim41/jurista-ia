@@ -16,3 +16,7 @@
 - [ ] Realizar vector search para buscar trechos mais relevantes do contrato.
 - [ ] Montar o prompt com contexto + pergunta.
 - [ ] Enviar para a LLM e retornar a resposta gerada.
+
+### Rodar DOcker
+
+docker run -p 8000:8000 ghcr.io/chroma-core/chroma:latest
