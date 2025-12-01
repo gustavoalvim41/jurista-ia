@@ -2,18 +2,19 @@
 import { useRef, useState } from "react";
 import Container from "@/components/container";
 import { Plus, MoveUp, FileText } from "lucide-react";
+import axios from "axios";
 
 const chat = [
   {
     usuario: "Consulte o documento e me diga qual é o prazo para apresentação.",
-    ia: "De acordo com o documento expedido nº 123/2025, o prazo para apresentação é de 10 dias úteis a partir da data de intimação. 📝"
-  }
+    ia: "De acordo com o documento expedido nº 123/2025, o prazo para apresentação é de 10 dias úteis a partir da data de intimação. 📝",
+  },
 ];
 
 export default function Home() {
   const [file, setFile] = useState<File | null>();
   const inputRef = useRef<HTMLInputElement>(null);
-  const [mensage, setMensage] = useState<boolean>(false);
+  const [message, setMessage] = useState<boolean>(false);
   const handleClick = () => {
     inputRef.current?.click();
   };
@@ -28,10 +29,29 @@ export default function Home() {
     { id: index * 2, from: "user", text: msg.usuario },
     { id: index * 2 + 1, from: "ia", text: msg.ia },
   ]);
+  const handleUpload = async () => {
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      await axios.post("http://localhost:5000/api/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      alert(`Upload realizado: ${file.name}`);
+    } catch (error) {
+      console.error("Erro no upload:", error);
+    }
+  };
   return (
     <Container>
-      <div className={`flex flex-col gap-4 h-screen ${mensage ? "justify-end pb-6" :"justify-center"}`}>
-        {mensage ? (
+      <div
+        className={`flex flex-col gap-4 h-screen ${
+          message ? "justify-end pb-6" : "justify-center"
+        }`}
+      >
+        {message ? (
           <div className="flex flex-col gap-3">
             {flat.map((m) => (
               <div
@@ -78,25 +98,26 @@ export default function Home() {
               disabled={!file}
             />
             {file ? (
-              <button className="w-16 p-2 flex items-center justify-center cursor-pointer">
+              <button
+                className="w-16 p-2 flex items-center justify-center cursor-pointer"
+                onClick={handleUpload}
+              >
                 <MoveUp className="text-foreground/90" size={28} />
               </button>
             ) : (
-              <>
-                <button
-                  className="w-16 p-2 flex items-center justify-center cursor-pointer"
-                  onClick={handleClick}
-                >
-                  <Plus className="text-foreground/90" size={28} />
-                </button>
-                <input
-                  type="file"
-                  ref={inputRef}
-                  className="hidden"
-                  onChange={handleFileChange}
-                />
-              </>
+              <button
+                className="w-16 p-2 flex items-center justify-center cursor-pointer"
+                onClick={handleClick}
+              >
+                <Plus className="text-foreground/90" size={28} />
+              </button>
             )}
+            <input
+              type="file"
+              ref={inputRef}
+              className="hidden"
+              onChange={handleFileChange}
+            />
           </div>
         </div>
       </div>
