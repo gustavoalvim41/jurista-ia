@@ -16,6 +16,7 @@ const mockChat = [
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
   const [question, setQuestion] = useState("");
+  const [latency, setLatency] = useState("");
   const [showChat, setShowChat] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const chatMessages = mockChat.flatMap((msg, index) => [
@@ -39,7 +40,7 @@ export default function Home() {
       const formData = new FormData();
       formData.append("file", file!);
       formData.append("question", question);
-
+      setLatency("Lendo documento....");
       await axios.post("http://localhost:5000/api/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -112,8 +113,14 @@ export default function Home() {
                 <Plus size={28} className="text-foreground/90" />
               </button>
             )}
-            <input type="file" ref={inputRef} className="hidden" onChange={onFileSelect} />
+            <input
+              type="file"
+              ref={inputRef}
+              className="hidden"
+              onChange={onFileSelect}
+            />
           </div>
+          <p className="text-foreground/60 text-sm">{latency}</p>
         </div>
       </div>
     </Container>
