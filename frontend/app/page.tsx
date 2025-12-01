@@ -3,10 +3,17 @@ import { useRef, useState } from "react";
 import Container from "@/components/container";
 import { Plus, MoveUp, FileText } from "lucide-react";
 
+const chat = [
+  {
+    usuario: "Consulte o documento e me diga qual é o prazo para apresentação.",
+    ia: "De acordo com o documento expedido nº 123/2025, o prazo para apresentação é de 10 dias úteis a partir da data de intimação. 📝"
+  }
+];
+
 export default function Home() {
   const [file, setFile] = useState<File | null>();
   const inputRef = useRef<HTMLInputElement>(null);
-  const [mensage, setMensage] = useState<boolean>(true);
+  const [mensage, setMensage] = useState<boolean>(false);
   const handleClick = () => {
     inputRef.current?.click();
   };
@@ -17,18 +24,27 @@ export default function Home() {
       console.log("Arquivo selecionado:", selectedFile.name);
     }
   };
+  const flat = chat.flatMap((msg, index) => [
+    { id: index * 2, from: "user", text: msg.usuario },
+    { id: index * 2 + 1, from: "ia", text: msg.ia },
+  ]);
   return (
     <Container>
-      <div className="flex flex-col justify-center gap-4 h-screen">
+      <div className={`flex flex-col gap-4 h-screen ${mensage ? "justify-end pb-6" :"justify-center"}`}>
         {mensage ? (
           <div className="flex flex-col gap-3">
-            {/* Mensagens */}
-            <div className="p-2 bg-foreground/90 text-primary-foreground self-end max-w-sm break-words leading-relaxed text-base">
-              Olá, tudo bem?
-            </div>
-            <div className="p-2 text-foreground self-start max-w-sm break-words leading-relaxed text-base">
-              Tudo ótimo! E você?
-            </div>
+            {flat.map((m) => (
+              <div
+                key={m.id}
+                className={`p-2 leading-relaxed text-base tracking-wide ${
+                  m.from === "user"
+                    ? "bg-foreground/90 text-primary-foreground max-w-sm break-words self-end"
+                    : "text-foreground self-start"
+                }`}
+              >
+                {m.text}
+              </div>
+            ))}
           </div>
         ) : null}
         <h1 className="mb-3 text-2xl font-medium tracking-normal leading-relaxed text-foreground/90 text-center">
@@ -50,7 +66,6 @@ export default function Home() {
               </div>
             </div>
           )}
-
           <div className="flex gap-2">
             <input
               type="text"
