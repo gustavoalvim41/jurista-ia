@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import Container from "@/components/container";
 import { Plus, MoveUp, FileText } from "lucide-react";
 import axios from "axios";
+import chatSchema from "../zod/chat";
 
 const chat = [
   {
@@ -15,6 +16,8 @@ export default function Home() {
   const [file, setFile] = useState<File | null>();
   const inputRef = useRef<HTMLInputElement>(null);
   const [message, setMessage] = useState<boolean>(false);
+  const [question, setQuestion] = useState("");
+
   const handleClick = () => {
     inputRef.current?.click();
   };
@@ -30,16 +33,38 @@ export default function Home() {
     { id: index * 2 + 1, from: "ia", text: msg.ia },
   ]);
   const handleUpload = async () => {
-    if (!file) return;
+    const input = document.querySelector(
+      "input[type='text']"
+    ) as HTMLInputElement;
+    const question = input?.value ?? "";
+    const validation = chatSchema.safeParse({
+      file,
+      question,
+    });
+    if (!validation.success) {
+      const issue = validation.error.issues[0];
+      const field = issue.path[0]; // "file" ou "question"
+      const message = issue.message;
+      if (field === "file") {
+        alert(message);
+        setFile(null);
+        return;
+      }
+      if (field === "question") {
+        alert(message);
+        return;
+      }
+    }
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("file", file!);
+    formData.append("question", question);
     try {
       await axios.post("http://localhost:5000/api/upload", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-      alert(`Upload realizado: ${file.name}`);
+      alert(`Upload realizado: ${file!.name}`);
     } catch (error) {
       console.error("Erro no upload:", error);
     }
@@ -89,6 +114,8 @@ export default function Home() {
           <div className="flex gap-2">
             <input
               type="text"
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
               className="py-4 w-full focus:outline-none focus:ring-0 focus:border-border"
               placeholder={
                 !file
