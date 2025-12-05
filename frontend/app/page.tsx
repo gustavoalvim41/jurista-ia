@@ -6,23 +6,13 @@ import { Plus, MoveUp, FileText } from "lucide-react";
 import axios from "axios";
 import chatSchema from "../zod/chat";
 
-const mockChat = [
-  {
-    usuario: "Consulte o documento e me diga qual é o prazo para apresentação.",
-    ia: "De acordo com o documento nº 123/2025, o prazo para apresentação é de 10 dias úteis.",
-  },
-];
-
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
   const [question, setQuestion] = useState("");
   const [latency, setLatency] = useState("");
   const [showChat, setShowChat] = useState(false);
+  const [chat, setChat] = useState<{ usuario: string; ia: string }[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
-  const chatMessages = mockChat.flatMap((msg, index) => [
-    { id: index * 2, from: "user", text: msg.usuario },
-    { id: index * 2 + 1, from: "ia", text: msg.ia },
-  ]);
   const openFileDialog = () => inputRef.current?.click();
   const onFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0] ?? null;
@@ -39,12 +29,23 @@ export default function Home() {
     try {
       const formData = new FormData();
       formData.append("file", file!);
-      formData.append("question", question);
+      formData.append("question", question!);
       setLatency("Lendo documento....");
       await axios.post("http://localhost:5000/api/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-
+      setLatency("Analisando pergunta....");
+      const response = await axios.post(
+        "http://localhost:5000/api/quest",
+        { question: question },
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      setChat((prev) => [
+        ...prev,
+        { usuario: question, ia: response.data.answer },
+      ]);
       alert(`Upload realizado: ${file!.name}`);
       setShowChat(true);
     } catch (err) {
@@ -60,16 +61,14 @@ export default function Home() {
       >
         {showChat && (
           <div className="flex flex-col gap-3">
-            {chatMessages.map((msg) => (
-              <div
-                key={msg.id}
-                className={`p-2 leading-relaxed text-base tracking-wide ${
-                  msg.from === "user"
-                    ? "bg-foreground/90 text-primary-foreground max-w-sm self-end"
-                    : "text-foreground self-start"
-                }`}
-              >
-                {msg.text}
+            {chat.map((msg, index) => (
+              <div key={index} className="flex flex-col gap-2">
+                <div className="p-2 bg-blue-500 text-white max-w-sm self-end rounded-md">
+                  {msg.usuario}
+                </div>
+                <div className="p-2 text-gray-900 self-start rounded-md">
+                  {msg.ia}
+                </div>
               </div>
             ))}
           </div>
